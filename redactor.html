@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Redactor | PDF Magic</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        .redactor-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            width: 100%;
+            height: calc(100vh - 250px);
+            min-height: 650px;
+        }
+
+        .tools-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .editor-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pdf-viewer {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem;
+            background: #1a1c23;
+            border-radius: 12px;
+        }
+
+        .page-container {
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            cursor: crosshair;
+        }
+
+        .page-container canvas {
+            z-index: 1;
+        }
+
+        .redaction-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+            width: 100%;
+            text-align: left;
+        }
+
+        .mode-btn.active {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            color: #fff;
+        }
+
+        .mode-btn i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .undo-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .undo-item {
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .undo-item button {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+        }
+
+        .drag-box {
+            position: absolute;
+            border: 2px dashed #ef4444;
+            background: rgba(239, 68, 68, 0.2);
+            pointer-events: none;
+            display: none;
+            z-index: 20;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero" style="margin-bottom: 2rem;">
+            <h1>Magic <span class="gradient-text">Redactor</span></h1>
+            <p>Permanently obscure sensitive details with professional-grade privacy tools.</p>
+        </section>
+
+        <section class="redactor-layout">
+            <aside class="tools-panel">
+                <div class="control-group">
+                    <h4>1. Upload PDF</h4>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                    <button class="primary-btn" style="width: 100%;"
+                        onclick="document.getElementById('file-input').click()">
+                        Select Document
+                    </button>
+                    <p style="font-size: 0.7rem; color: #666; margin-top: 0.5rem; text-align: center;">
+                        Financials, IDs, or Personal info
+                    </p>
+                </div>
+
+                <div class="control-group">
+                    <h4>2. Redaction Mode</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <button class="mode-btn active" data-mode="blur">
+                            <i data-lucide="eye"></i>
+                            <div>
+                                <b style="display: block;">Glass Blur</b>
+                                <span style="font-size: 0.7rem; opacity: 0.7;">Modern privacy style</span>
+                            </div>
+                        </button>
+                        <button class="mode-btn" data-mode="blackout">
+                            <i data-lucide="square"></i>
+                            <div>
+                                <b style="display: block;">Solid Blackout</b>
+                                <span style="font-size: 0.7rem; opacity: 0.7;">Maximum security</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4 style="display: flex; align-items: center; justify-content: space-between;">
+                        Active Redactions
+                        <button id="clear-all"
+                            style="font-size: 0.65rem; background: none; border: 1px solid #333; color: #999; padding: 2px 6px; border-radius: 4px; cursor: pointer;">Clear
+                            All</button>
+                    </h4>
+                    <div class="undo-stack" id="redaction-list">
+                        <p style="text-align: center; color: #444; font-size: 0.75rem; margin-top: 1rem;">No redactions
+                            yet</p>
+                    </div>
+                </div>
+
+                <div class="action-bar" style="border: none; padding: 0; margin-top: auto;">
+                    <button id="save-btn" class="accent-btn" disabled style="width: 100%;">Apply & Download</button>
+                </div>
+            </aside>
+
+            <section class="editor-panel">
+                <div class="pdf-viewer" id="pdf-container">
+                    <div style="text-align: center; color: #444; margin-top: 10rem;">
+                        <i data-lucide="shield-alert"
+                            style="width: 48px; height: 48px; opacity: 0.2; margin-bottom: 1rem;"></i>
+                        <h3>Privacy Pro Editor</h3>
+                        <p>Upload a file to start protecting your data.</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2026 PDF Magic - Permanently safe, purely local.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/tools/redactor.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>
+
+
+
+

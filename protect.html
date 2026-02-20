@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protect PDF | PDF Magic</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero">
+            <h1>Protect <span class="gradient-text">PDF Security</span></h1>
+            <p>Add a password to your PDF files to keep them private. Everything stays securely in your browser.</p>
+        </section>
+
+        <section class="tool-interface">
+            <div id="drop-zone" class="upload-zone">
+                <div class="upload-content">
+                    <i data-lucide="lock"></i>
+                    <h3>Select PDF to Protect</h3>
+                    <p>or drag and drop it here</p>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                    <button class="primary-btn" onclick="document.getElementById('file-input').click()">Choose
+                        File</button>
+                </div>
+            </div>
+
+            <div id="setup-container" class="file-list-container" hidden>
+                <h3>Security Settings</h3>
+                <div class="file-card" style="margin-bottom: 2rem;">
+                    <div class="file-card-info">
+                        <span class="file-icon">📄</span>
+                        <span id="selected-file-name" class="file-name">filename.pdf</span>
+                    </div>
+                    <button id="change-file-btn" class="remove-btn">✕</button>
+                </div>
+
+                <div class="control-group"
+                    style="max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; text-align: left;">
+                    <label for="pdf-password" style="font-size: 0.9rem; color: var(--text-secondary);">Set
+                        Password</label>
+                    <div style="position: relative; width: 100%;">
+                        <input type="password" id="pdf-password" class="text-input-area" placeholder="Enter password..."
+                            style="height: auto; padding: 1rem; font-size: 1.1rem; width: 100%;">
+                        <button id="toggle-password"
+                            style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+                            <i data-lucide="eye" style="width: 20px;"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="action-bar" style="margin-top: 2rem;">
+                    <button id="protect-btn" class="accent-btn">Encrypt & Protect</button>
+                </div>
+            </div>
+
+            <div id="processing-state" class="processing-state" hidden>
+                <div class="loader"></div>
+                <p>Protecting your PDF... This happens locally in your browser.</p>
+            </div>
+
+            <div id="success-state" class="success-state" hidden>
+                <div class="success-icon">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h3>PDF Protected!</h3>
+                <p>Your file is now encrypted and ready for download.</p>
+                <div class="action-bar">
+                    <button id="download-btn" class="primary-btn">Download Protected PDF</button>
+                    <button onclick="location.reload()" class="secondary-btn">Start Over</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2026 PDF Magic - Files processed safely in browser.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/tools/protect-pdf.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>
+
+
+
+

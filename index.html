@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Magic | Professional PDF Suite</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="#" class="login-btn" onclick="openComingSoonModal()">Log In</a>
+                <a href="#" class="signup-btn" onclick="openComingSoonModal()">Get Started <i data-lucide="arrow-right"
+                        style="width: 16px; height: 16px;"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero">
+            <h1>All Your PDF Tools <br> <span class="gradient-text">In One Place</span></h1>
+            <p>Free, fast, and secure PDF tools. Process files directly in your browser – nothing is uploaded to our
+                servers.</p>
+        </section>
+
+        <!-- Filter Navigation -->
+        <div class="filter-nav">
+            <button class="filter-btn active" data-filter="all">
+                <i data-lucide="layout-grid"></i> All
+            </button>
+            <button class="filter-btn" data-filter="govt">
+                <i data-lucide="map-pin"></i> Govt PDF
+            </button>
+            <button class="filter-btn" data-filter="social">
+                <i data-lucide="sparkles"></i> Social Magic
+            </button>
+            <button class="filter-btn" data-filter="convert">
+                <i data-lucide="refresh-cw"></i> Convert
+            </button>
+            <button class="filter-btn" data-filter="secure">
+                <i data-lucide="shield-check"></i> Secure
+            </button>
+            <button class="filter-btn" data-filter="organize">
+                <i data-lucide="layers"></i> Organize
+            </button>
+        </div>
+
+        <div class="grid-container" id="tool-grid">
+            <!-- 1. Govt PDF -->
+            <div class="tool-item-wrapper visible" data-category="govt">
+                <a href="/id-card-magic.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #00c853; border-width: 2px;">
+                        <div class="card-icon" style="color: #00c853;">
+                            <i data-lucide="contact"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                ID Card Magic
+                                <span
+                                    style="font-size: 0.6rem; background: #00c853; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">New
+                                    Gen</span>
+                            </h4>
+                            <p>Crop & resize Aadhar, PAN, Voter ID & more to pocket size</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 2. Social Magic -->
+            <div class="tool-item-wrapper visible" data-category="social">
+                <a href="/carousel-creator.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #ff9100; border-width: 2px;">
+                        <div class="card-icon" style="color: #ff9100;">
+                            <i data-lucide="layout-template"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                LinkedIn Carousel
+                                <span
+                                    style="font-size: 0.6rem; background: #ff9100; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Pro</span>
+                            </h4>
+                            <p>Turn PDFs into branded swipeable carousels for social media</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="social">
+                <a href="/pdf-to-social.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: var(--accent-color); border-width: 2px;">
+                        <div class="card-icon" style="color: var(--accent-color);">
+                            <i data-lucide="instagram"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                PDF to Social Card
+                                <span
+                                    style="font-size: 0.6rem; background: var(--accent-color); color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Unique</span>
+                            </h4>
+                            <p>Turn PDF text into beautiful shareable social media cards</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="social">
+                <a href="/flashcards.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #7c4dff; border-width: 2px;">
+                        <div class="card-icon" style="color: #7c4dff;">
+                            <i data-lucide="brain-circuit"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                PDF to Flashcards
+                                <span
+                                    style="font-size: 0.6rem; background: #7c4dff; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Unique</span>
+                            </h4>
+                            <p>Convert your PDF notes into interactive, flippable study cards</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 3. Secure PDF -->
+            <div class="tool-item-wrapper visible" data-category="secure">
+                <a href="/protect.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card">
+                        <div class="card-icon">
+                            <i data-lucide="lock"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4>Protect PDF</h4>
+                            <p>Add a password and encrypt your PDF file</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="secure">
+                <a href="/redactor.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #ef4444; border-width: 2px;">
+                        <div class="card-icon" style="color: #ef4444;">
+                            <i data-lucide="eye-off"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                Magic Redactor
+                                <span
+                                    style="font-size: 0.6rem; background: #ef4444; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Privacy
+                                    Pro</span>
+                            </h4>
+                            <p>Permanently hide sensitive info with Glass-Blur or Blackout</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 4. Convert PDF -->
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="word-to-pdf.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #2b579a; border-width: 2px;">
+                        <div class="card-icon" style="color: #2b579a;">
+                            <i data-lucide="file-text"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                Word to PDF
+                                <span
+                                    style="font-size: 0.6rem; background: #2b579a; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Office</span>
+                            </h4>
+                            <p>Convert .docx files to professional PDF documents</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="excel-to-pdf.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #217346; border-width: 2px;">
+                        <div class="card-icon" style="color: #217346;">
+                            <i data-lucide="table"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                Excel to PDF
+                                <span
+                                    style="font-size: 0.6rem; background: #217346; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Office</span>
+                            </h4>
+                            <p>Turn spreadsheets into well-formatted PDF tables</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="ppt-to-pdf.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #d24726; border-width: 2px;">
+                        <div class="card-icon" style="color: #d24726;">
+                            <i data-lucide="presentation"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                PPT to PDF
+                                <span
+                                    style="font-size: 0.6rem; background: #d24726; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Office</span>
+                            </h4>
+                            <p>Convert PowerPoint slides into easy-to-read PDFs</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="pdf-to-word.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #2b579a; border-width: 2px;">
+                        <div class="card-icon" style="color: #2b579a;">
+                            <i data-lucide="file-text"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                PDF to Word
+                                <span
+                                    style="font-size: 0.6rem; background: #2b579a; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Magic</span>
+                            </h4>
+                            <p>Recover Word documents from PDF files with high accuracy</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="pdf-to-excel.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #217346; border-width: 2px;">
+                        <div class="card-icon" style="color: #217346;">
+                            <i data-lucide="table"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                PDF to Excel
+                                <span
+                                    style="font-size: 0.6rem; background: #217346; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Magic</span>
+                            </h4>
+                            <p>Extract data and tables from PDF into editable spreadsheets</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="pdf-to-ppt.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card" style="border-color: #d24726; border-width: 2px;">
+                        <div class="card-icon" style="color: #d24726;">
+                            <i data-lucide="presentation"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                                PDF to PPT
+                                <span
+                                    style="font-size: 0.6rem; background: #d24726; color: #fff; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">Magic</span>
+                            </h4>
+                            <p>Convert PDF pages into editable PowerPoint slides</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="/pdf-to-image.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card">
+                        <div class="card-icon">
+                            <i data-lucide="file-image"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4>PDF to Image</h4>
+                            <p>Convert PDF pages to JPG or PNG images</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="convert">
+                <a href="/image-to-pdf.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card">
+                        <div class="card-icon">
+                            <i data-lucide="image-plus"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4>Image to PDF</h4>
+                            <p>Convert JPG, PNG images to PDF format</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 5. Organize PDF -->
+            <div class="tool-item-wrapper visible" data-category="organize">
+                <a href="/merge.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card">
+                        <div class="card-icon">
+                            <i data-lucide="merge"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4>Merge PDF</h4>
+                            <p>Combine multiple PDF files into one document</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="organize">
+                <a href="/split.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card">
+                        <div class="card-icon">
+                            <i data-lucide="scissors"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4>Split PDF</h4>
+                            <p>Extract specific pages or split into multiple files</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="organize">
+                <a href="/compress.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card">
+                        <div class="card-icon">
+                            <i data-lucide="shrink"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4>Compress PDF</h4>
+                            <p>Reduce PDF file size without losing quality</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="tool-item-wrapper visible" data-category="organize">
+                <a href="/rotate.html" style="text-decoration: none; color: inherit;">
+                    <div class="tool-card">
+                        <div class="card-icon">
+                            <i data-lucide="rotate-cw"></i>
+                        </div>
+                        <div class="card-info">
+                            <h4>Rotate PDF</h4>
+                            <p>Rotate PDF pages to the correct orientation</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Featured Unique Tools Section -->
+        <section class="featured-tools-section">
+            <div class="section-header">
+                <h2>Our Exclusive Features</h2>
+                <p>Powerful tools you won't find anywhere else</p>
+            </div>
+            <div class="featured-grid">
+                <div class="feature-highlight-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(0, 200, 83, 0.1); color: #00c853;">
+                        <i data-lucide="contact"></i>
+                    </div>
+                    <h3>ID Card Magic</h3>
+                    <p>Perfectly crop and resize your Aadhar, PAN, or Voter ID cards to standard pocket size. Prints
+                        multiple copies on a single A4 sheet automatically.</p>
+                    <a href="/id-card-magic.html" class="feature-link">Try it now <i data-lucide="arrow-right"></i></a>
+                </div>
+                <div class="feature-highlight-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(255, 145, 0, 0.1); color: #ff9100;">
+                        <i data-lucide="layout-template"></i>
+                    </div>
+                    <h3>Social Media Carousels</h3>
+                    <p>Transform any PDF document into a beautiful, engaging, swipeable image carousel optimized for
+                        LinkedIn and Instagram in seconds.</p>
+                    <a href="/carousel-creator.html" class="feature-link">Try it now <i
+                            data-lucide="arrow-right"></i></a>
+                </div>
+                <div class="feature-highlight-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(124, 77, 255, 0.1); color: #7c4dff;">
+                        <i data-lucide="brain-circuit"></i>
+                    </div>
+                    <h3>PDF to Flashcards</h3>
+                    <p>Study smarter! Our AI-powered tool automatically extracts key concepts from your PDF notes and
+                        converts them into interactive study flashcards.</p>
+                    <a href="/flashcards.html" class="feature-link">Try it now <i data-lucide="arrow-right"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Activity Section -->
+        <section class="recent-activity-section" id="recent-activity-section"
+            style="display: none; width: 100%; max-width: 1200px; padding: 2rem 20px; margin-bottom: 2rem;">
+            <div class="section-header" style="text-align: left; margin-bottom: 2rem; max-width: 100%;">
+                <h2
+                    style="font-size: 1.8rem; display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;">
+                    <i data-lucide="clock" style="color: var(--accent-color);"></i> Recent Activity
+                </h2>
+                <p style="color: var(--text-secondary); margin-left: 2rem;">Access files you've recently processed.</p>
+            </div>
+            <div id="recent-files-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+                <!-- Cards injected here via JS -->
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="section-header">
+                <h2>Frequently Asked Questions</h2>
+                <p>Everything you need to know about PDF Magic</p>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Are my files safe and secure?
+                        <i data-lucide="plus"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, absolutely! PDF Magic processes all your files locally in your web browser. This means
+                            your files never leave your device and are never uploaded to any external servers. Your
+                            privacy and security are 100% guaranteed.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Is PDF Magic completely free to use?
+                        <i data-lucide="plus"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! We believe essential PDF tools should be accessible to everyone. All standard features
+                            on PDF Magic are completely free without any hidden charges or watermarks.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Is there a file size limit?
+                        <i data-lucide="plus"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Because processing happens in your browser, the limit depends on your device's memory (RAM).
+                            However, for most modern devices, PDFs up to 50MB should process smoothly and quickly.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Does it work on mobile devices?
+                        <i data-lucide="plus"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, PDF Magic is fully responsive and optimized for mobile devices. You can convert,
+                            compress, and organize your PDFs right from your smartphone or tablet browser.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="privacy-section">
+            <div class="privacy-card">
+                <h2>Privacy First</h2>
+                <p class="privacy-sub">All PDF operations happen directly in your browser. Your files never leave your
+                    device, ensuring complete privacy and security.</p>
+                <div class="features-row">
+                    <div class="feature-item">
+                        <span class="feature-title">100%</span>
+                        <span class="feature-label">Secure</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-title">Free</span>
+                        <span class="feature-label">Forever</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-title">Fast</span>
+                        <span class="feature-label">Processing</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2026 PDF Magic - All your PDF needs in one place.<br>Files processed safely in
+                browser.</p>
+        </div>
+    </footer>
+
+    <!-- Coming Soon Modal -->
+    <div class="modal-overlay" id="comingSoonModal">
+        <div class="modal-content glass-panel">
+            <div class="modal-close" onclick="closeComingSoonModal()">
+                <i data-lucide="x"></i>
+            </div>
+            <div class="modal-icon">
+                <i data-lucide="sparkles"></i>
+            </div>
+            <h3>Premium Features<br><span class="gradient-text">Coming Soon!</span></h3>
+            <p>We are working hard to bring you advanced features like cloud storage, unlimited pro tools, and more.</p>
+            <div class="modal-actions">
+                <button class="primary-btn" onclick="closeComingSoonModal()">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Recent Activity Logic
+        function loadRecentActivity() {
+            const recentSection = document.getElementById('recent-activity-section');
+            const recentGrid = document.getElementById('recent-files-grid');
+
+            try {
+                const history = JSON.parse(localStorage.getItem('pdf_magic_history')) || [];
+
+                if (history.length > 0) {
+                    recentSection.style.display = 'block';
+                    recentGrid.innerHTML = ''; // clear
+
+                    // Show up to 4 most recent
+                    const displayHistory = history.slice(0, 4);
+
+                    displayHistory.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'feature-card';
+                        card.style.cursor = 'default';
+                        card.style.padding = '1.5rem';
+
+                        // Map tool names to icons
+                        let iconName = 'file-text';
+                        let toolNameLc = item.tool.toLowerCase();
+                        if (toolNameLc.includes('compress')) iconName = 'shrink';
+                        if (toolNameLc.includes('merge')) iconName = 'merge';
+                        if (toolNameLc.includes('protect')) iconName = 'lock';
+                        if (toolNameLc.includes('social') || toolNameLc.includes('carousel')) iconName = 'image';
+                        if (toolNameLc.includes('split')) iconName = 'scissors';
+                        if (toolNameLc.includes('excel')) iconName = 'table';
+
+                        const date = new Date(item.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                        card.innerHTML = `
+                            <div class="feature-icon" style="margin-bottom: 1rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(124, 77, 255, 0.1); border-radius: 10px; color: var(--accent-color);"><i data-lucide="${iconName}"></i></div>
+                            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem; word-break: break-all; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.filename}">${item.filename}</h3>
+                            <p style="font-size: 0.85rem; margin-bottom: 0.8rem;"><span style="color: var(--accent-color); font-weight: 600;">${item.tool}</span></p>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 4px;"><i data-lucide="clock" style="width: 12px; height: 12px;"></i>${date}</p>
+                        `;
+                        recentGrid.appendChild(card);
+                    });
+
+                    lucide.createIcons();
+                }
+            } catch (e) {
+                console.error("Error loading history:", e);
+            }
+        }
+
+        // Load on start
+        document.addEventListener('DOMContentLoaded', loadRecentActivity);
+
+        // Dashboard Filtering Logic
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const toolItems = document.querySelectorAll('.tool-item-wrapper');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+
+                const filterValue = button.getAttribute('data-filter');
+
+                toolItems.forEach(item => {
+                    const category = item.getAttribute('data-category');
+
+                    if (filterValue === 'all' || filterValue === category) {
+                        item.classList.remove('hidden');
+                        item.classList.add('visible');
+                    } else {
+                        item.classList.remove('visible');
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+        });
+        // FAQ Accordion Logic
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+
+                // Close all other FAQs
+                faqItems.forEach(otherItem => {
+                    otherItem.classList.remove('active');
+                    const icon = otherItem.querySelector('i');
+                    icon.setAttribute('data-lucide', 'plus');
+                });
+
+                // Toggle current FAQ
+                if (!isActive) {
+                    item.classList.add('active');
+                    question.querySelector('i').setAttribute('data-lucide', 'minus');
+                }
+
+                // Re-initialize icons
+                lucide.createIcons();
+            });
+        });
+        // Modal Logic
+        const modal = document.getElementById('comingSoonModal');
+
+        function openComingSoonModal() {
+            modal.classList.add('active');
+        }
+
+        function closeComingSoonModal() {
+            modal.classList.remove('active');
+        }
+
+        // Close modal on click outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeComingSoonModal();
+            }
+        });
+    </script>
+</body>
+
+</html>

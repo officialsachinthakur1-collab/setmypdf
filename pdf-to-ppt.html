@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to PPT | PDF Magic</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.10.0/dist/pptxgen.bundle.js"></script>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="presentation"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero">
+            <h1>PDF to <span class="gradient-text">PowerPoint</span></h1>
+            <p>Convert your PDFs into editable PPT presentations slide by slide.</p>
+        </section>
+
+        <div class="tool-interface">
+            <div id="drop-zone" class="upload-zone">
+                <div class="upload-content">
+                    <i data-lucide="presentation"></i>
+                    <h3>Choose PDF File</h3>
+                    <p>or drag and drop here</p>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                    <button class="primary-btn" onclick="document.getElementById('file-input').click()">Browse
+                        Files</button>
+                </div>
+            </div>
+
+            <div id="file-ready-container" class="file-list-container" style="display: none;">
+                <div class="file-card">
+                    <div class="file-card-info">
+                        <div class="file-icon" style="color: #d24726;"><i data-lucide="presentation"></i></div>
+                        <div>
+                            <div id="file-name" class="file-name">presentation.pdf</div>
+                            <div id="file-size" style="font-size: 0.8rem; color: var(--text-secondary);">0 KB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-bar">
+                    <button id="convert-btn" class="accent-btn" style="width: 100%;">Create PPTX</button>
+                </div>
+            </div>
+
+            <div id="processing-state" class="processing-state" style="display: none;">
+                <div class="loader"></div>
+                <h3>Rendering Slides...</h3>
+                <p>Converting PDF pages into presentation slides.</p>
+            </div>
+
+            <div id="success-state" class="success-state" style="display: none;">
+                <div class="success-icon">
+                    <i data-lucide="check-circle"></i>
+                </div>
+                <h3>PPTX Generated!</h3>
+                <p>Your presentation is ready.</p>
+                <div class="action-bar">
+                    <button id="download-btn" class="accent-btn">Download PPTX</button>
+                    <button onclick="location.reload()" class="secondary-btn">Convert Another</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2026 PDF Magic - Instant Visual Slide Conversion</p>
+        </div>
+    </footer>
+
+    <script type="module" src="src/tools/pdf-to-ppt.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>
+
+
+
+
+
+

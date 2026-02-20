@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Carousel Creator | PDF Magic</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        .carousel-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            width: 100%;
+            height: calc(100vh - 250px);
+            min-height: 600px;
+        }
+
+        .config-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .preview-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .slides-scroll {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 100%;
+            align-items: center;
+            padding-bottom: 2rem;
+        }
+
+        .slide-preview {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1/1;
+            background: #fff;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide-preview canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .branding-overlay {
+            position: absolute;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .branding-header {
+            top: 0;
+            left: 0;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .branding-footer {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.05));
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .color-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-dot.active {
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        .handle-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            width: 100%;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .handle-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(124, 77, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.2);
+        }
+
+        .theme-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+        }
+
+        .theme-card.active {
+            border-color: var(--accent-color);
+            background: rgba(124, 77, 255, 0.1);
+        }
+
+        /* Tabs UI */
+        .social-tabs {
+            display: flex;
+            gap: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            margin: 0 auto 2rem auto;
+            max-width: fit-content;
+        }
+
+        .social-tab-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .social-tab-btn.active {
+            background: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero" style="margin-bottom: 3rem;">
+            <h1 class="gradient-text">PDF to Social Post</h1>
+            <p>Turn your PDFs into premium Quote Cards or LinkedIn Carousels instantly.</p>
+        </section>
+
+        <!-- Tool Mode Switcher -->
+        <div class="social-tabs">
+            <button class="social-tab-btn" id="tab-quote" onclick="window.location.href='/pdf-to-social.html'">
+                <i data-lucide="image"></i> Quote Card
+            </button>
+            <button class="social-tab-btn active" id="tab-carousel">
+                <i data-lucide="gallery-horizontal-end"></i> Slide Carousel
+            </button>
+        </div>
+
+        <section class="carousel-layout">
+            <aside class="config-panel">
+                <div class="control-group">
+                    <h4>1. Upload PDF</h4>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                    <button class="primary-btn" style="width: 100%;"
+                        onclick="document.getElementById('file-input').click()">
+                        Choose PDF
+                    </button>
+                </div>
+
+                <div class="control-group">
+                    <h4>2. Branding</h4>
+
+                    <label
+                        style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 0.4rem; display: block;">Profile
+                        Picture (Avatar)</label>
+                    <input type="file" id="avatar-input" accept="image/*" hidden>
+                    <button class="secondary-btn"
+                        style="width: 100%; font-size: 0.95rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.8rem;"
+                        onclick="document.getElementById('avatar-input').click()">
+                        <i data-lucide="image" style="width: 1.2rem; height: 1.2rem;"></i> Upload Avatar
+                    </button>
+
+                    <label
+                        style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 0.4rem; display: block;">Full
+                        Name</label>
+                    <input type="text" id="full-name" class="handle-input" style="margin-bottom: 1rem;"
+                        placeholder="e.g. John Doe">
+
+                    <label
+                        style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 0.4rem; display: block;">Social
+                        Handle</label>
+                    <input type="text" id="social-handle" class="handle-input" placeholder="@yourname">
+
+                    <div style="margin-top: 1.5rem;">
+                        <label
+                            style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 0.8rem; display: block;">Accent
+                            Color</label>
+                        <div class="color-picker-group" id="color-dots">
+                            <div class="color-dot active" style="background: #7c4dff;" data-color="#7c4dff"></div>
+                            <div class="color-dot" style="background: #00c853;" data-color="#00c853"></div>
+                            <div class="color-dot" style="background: #ff9100;" data-color="#ff9100"></div>
+                            <div class="color-dot" style="background: #2196f3;" data-color="#2196f3"></div>
+                            <div class="color-dot" style="background: #e91e63;" data-color="#e91e63"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>3. Background Theme</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="theme-card active" data-theme="light">
+                            <b>Light (Classic)</b>
+                            <p style="font-size: 0.7rem; color: var(--text-secondary);">White background with shadow</p>
+                        </div>
+                        <div class="theme-card" data-theme="dark">
+                            <b>Dark Mode</b>
+                            <p style="font-size: 0.7rem; color: var(--text-secondary);">Deep gray background</p>
+                        </div>
+                        <div class="theme-card" data-theme="gradient_accent">
+                            <b>Accent Gradient</b>
+                            <p style="font-size: 0.7rem; color: var(--text-secondary);">Soft gradient from accent color
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>4. Frame Style</h4>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="theme-card active" data-frame="minimal" id="frame-minimal">
+                            <b>Minimal</b>
+                            <p style="font-size: 0.7rem; color: var(--text-secondary);">Clean layout with logo</p>
+                        </div>
+                        <div class="theme-card" data-frame="bordered" id="frame-bordered">
+                            <b>Full Border</b>
+                            <p style="font-size: 0.7rem; color: var(--text-secondary);">Thick branded border frame</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar" style="border: none; padding: 0; margin-top: auto;">
+                    <button id="export-btn" class="accent-btn" disabled style="width: 100%;">Download Zip/PNGs</button>
+                    <p style="font-size: 0.7rem; color: var(--text-secondary); text-align: center; margin-top: 0.5rem;">
+                        Pro: Unlimited Slides
+                    </p>
+                </div>
+            </aside>
+
+            <section class="preview-panel">
+                <div class="slides-scroll" id="slides-container">
+                    <div style="text-align: center; color: #666; margin-top: 5rem;">
+                        <i data-lucide="image" style="width: 48px; height: 48px; opacity: 0.3;"></i>
+                        <p>Upload a PDF to see slide previews</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2026 PDF Magic - Your brand, your data, your device.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/tools/carousel-creator.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>
+
+
+
+

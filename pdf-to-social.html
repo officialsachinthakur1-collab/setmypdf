@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Social Card - PDF Magic</title>
+    <link rel="stylesheet" href="/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        .social-tool-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            margin: 2rem 0;
+            align-items: start;
+        }
+
+        @media (max-width: 1000px) {
+            .social-tool-container {
+                grid-template-columns: 1fr;
+            }
+
+            .canvas-preview-section {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        .pdf-viewer-section {
+            background: rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 850px;
+            overflow-y: auto;
+        }
+
+        .canvas-preview-section {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        #social-canvas {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #000;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            /* Anti-aliasing / Sharpness improvement */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .control-group h4 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gradient-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .gradient-opt {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .gradient-opt::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+        }
+
+        .gradient-opt:hover {
+            scale: 1.1;
+            z-index: 10;
+        }
+
+        .gradient-opt.active {
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        .font-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .font-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .font-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .text-input-area {
+            width: 100%;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: #fff;
+            padding: 0.8rem;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .pdf-render-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: #eee;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            min-height: 400px;
+            user-select: text !important;
+        }
+
+        .extract-page-break {
+            display: block;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            margin: 2rem 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .extract-page-break::after {
+            content: attr(data-page);
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            padding: 0 10px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Legacy Selection Hacks Removed in favor of Plain Text Pivot */
+
+        .render-placeholder {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            width: 100%;
+        }
+
+        .selection-instructions {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(124, 77, 255, 0.1);
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(124, 77, 255, 0.4);
+            }
+
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 20px 10px rgba(124, 77, 255, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(124, 77, 255, 0);
+            }
+        }
+
+        /* Tabs UI */
+        .social-tabs {
+            display: flex;
+            gap: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            margin: 0 auto 2rem auto;
+            max-width: fit-content;
+        }
+
+        .social-tab-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-tab-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .social-tab-btn.active {
+            background: var(--accent-color);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper" style="max-width: 1300px;">
+        <section class="hero" style="margin-bottom: 1.5rem;">
+            <h1 class="gradient-text">PDF to Social Post</h1>
+            <p>Turn your PDFs into premium Quote Cards or LinkedIn Carousels instantly.</p>
+        </section>
+
+        <!-- Tool Mode Switcher -->
+        <div class="social-tabs">
+            <button class="social-tab-btn active" id="tab-quote">
+                <i data-lucide="image"></i> Quote Card
+            </button>
+            <button class="social-tab-btn" id="tab-carousel" onclick="window.location.href='/carousel-creator.html'">
+                <i data-lucide="gallery-horizontal-end"></i> Slide Carousel
+            </button>
+        </div>
+
+        <!-- Tool Interface -->
+        <div id="upload-section" class="tool-interface">
+            <div id="drop-zone" class="upload-zone">
+                <input type="file" id="file-input" hidden accept=".pdf">
+                <div class="upload-content">
+                    <i data-lucide="instagram"></i>
+                    <h3>Select PDF File</h3>
+                    <p>Select a PDF to extract beautiful quotes or text</p>
+                    <button class="primary-btn" onclick="document.getElementById('file-input').click()">Choose
+                        File</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="editor-section" class="social-tool-container" hidden>
+            <!-- Left: PDF Viewer -->
+            <div class="pdf-viewer-section">
+                <div class="selection-instructions">
+                    💡 <b>Tip:</b> Select text below to auto-fill the quote. You can also upload your own background
+                    image!
+                </div>
+                <!-- Custom Background Upload -->
+                <div style="margin-bottom: 1rem;">
+                    <input type="file" id="bg-upload" hidden accept="image/*">
+                    <button class="secondary-btn"
+                        style="width: 100%; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
+                        onclick="document.getElementById('bg-upload').click()">
+                        <i data-lucide="image" style="width: 1.2rem; height: 1.2rem;"></i> Upload Custom Background
+                    </button>
+                </div>
+                <div id="pdf-render-container" class="pdf-render-container">
+                    <div class="render-placeholder">
+                        <i data-lucide="file-text"
+                            style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <p>Upload a PDF to view it here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Canvas & Controls -->
+            <div class="canvas-preview-section">
+                <!-- Internal resolution 2160px for sharpness, CSS keeps it 100% width -->
+                <canvas id="social-canvas" width="2160" height="2160"></canvas>
+
+                <div class="control-group">
+                    <h4>Quote Content</h4>
+                    <textarea id="card-text" class="text-input-area" placeholder="Enter your quote..."></textarea>
+
+                    <h4>Author / Credit (Optional)</h4>
+                    <input type="text" id="card-author" class="text-input-area" style="height: 50px;"
+                        placeholder="e.g. - Albert Einstein">
+                </div>
+
+                <div class="control-group">
+                    <h4>Background Theme</h4>
+                    <div class="gradient-grid" id="gradient-selector">
+                        <!-- Gradients will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>Typography</h4>
+                    <div class="font-options">
+                        <button class="font-btn active" data-font="Outfit">Modern</button>
+                        <button class="font-btn" data-font="Playfair Display">Elegant</button>
+                        <button class="font-btn" data-font="Inter">Clean</button>
+                    </div>
+                </div>
+
+                <div class="action-bar" style="margin-top: auto; padding: 0;">
+                    <button id="download-btn" class="primary-btn" style="width: 100%;">Download Social Card</button>
+                    <button onclick="location.reload()" class="secondary-btn" style="width: 100%;">Change PDF</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">
+                © 2026 PDF Magic - Files processed safely in browser.
+            </p>
+        </div>
+    </footer>
+
+    <script type="module">
+        // PDF to Social Card - Core Logic
+        const fileInput = document.getElementById('file-input');
+        const uploadSection = document.getElementById('upload-section');
+        const editorSection = document.getElementById('editor-section');
+        const pdfRenderContainer = document.getElementById('pdf-render-container');
+        const canvas = document.getElementById('social-canvas');
+        const ctx = canvas.getContext('2d');
+        const cardAuthorInput = document.getElementById('card-author');
+        const bgUploadInput = document.getElementById('bg-upload');
+        const fontBtns = document.querySelectorAll('.font-btn');
+        const cardTextArea = document.getElementById('card-text');
+        const downloadBtn = document.getElementById('download-btn');
+
+        let pdfDoc = null;
+        let currentFont = 'Outfit';
+        let currentBgType = 'gradient'; // 'gradient' or 'image'
+        let currentGradient = { colors: ['#7c4dff', '#448aff'], name: 'Purple Night' };
+        let customBgImage = null;
+
+        // Premium Backgrounds (Gradients & Unsplash placeholders)
+        const backgrounds = [
+            { type: 'gradient', colors: ['#7c4dff', '#448aff'] },
+            { type: 'gradient', colors: ['#ff5252', '#f9d423'] },
+            { type: 'gradient', colors: ['#090a0f', '#2d3436'] }, // Dark theme
+            { type: 'image', url: 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=800&auto=format&fit=crop' }, // Aesthetic gradient
+            { type: 'image', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop' }, // Mountains/Nature
+            { type: 'image', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop' }, // Abstract liquid
+            { type: 'image', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop' }, // Space/Tech
+            { type: 'gradient', colors: ['#1d976c', '#93f9b9'] }
+        ];
+
+        const gradientSelector = document.getElementById('gradient-selector');
+
+        function setupUI() {
+            if (gradientSelector) {
+                gradientSelector.innerHTML = '';
+                backgrounds.forEach((bg, idx) => {
+                    const opt = document.createElement('div');
+                    opt.className = `gradient-opt ${idx === 0 ? 'active' : ''}`;
+
+                    if (bg.type === 'gradient') {
+                        opt.style.background = `linear-gradient(135deg, ${bg.colors[0]}, ${bg.colors[1]})`;
+                    } else {
+                        opt.style.backgroundImage = `url(${bg.url})`;
+                    }
+
+                    opt.onclick = () => {
+                        document.querySelectorAll('.gradient-opt').forEach(el => el.classList.remove('active'));
+                        opt.classList.add('active');
+                        currentBgType = bg.type;
+                        if (bg.type === 'gradient') currentGradient = bg;
+                        if (bg.type === 'image') loadBgImage(bg.url);
+                        else drawCard();
+                    };
+                    gradientSelector.appendChild(opt);
+                });
+            }
+
+            // Handle Custom Image Upload
+            if (bgUploadInput) {
+                bgUploadInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            document.querySelectorAll('.gradient-opt').forEach(el => el.classList.remove('active'));
+                            currentBgType = 'custom_image';
+                            loadBgImage(event.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+            }
+
+            const fontBtns = document.querySelectorAll('.font-options .font-btn');
+            const cardTextArea = document.getElementById('card-text');
+            const downloadBtn = document.getElementById('download-btn');
+
+            fontBtns.forEach(btn => {
+                btn.onclick = () => {
+                    fontBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFont = btn.dataset.font;
+                    drawCard();
+                };
+            });
+
+            fileInput.onchange = (e) => handleFile(e.target.files[0]);
+            cardTextArea.oninput = drawCard;
+            cardAuthorInput.oninput = drawCard;
+
+            downloadBtn.onclick = () => {
+                const link = document.createElement('a');
+                link.download = `pdf-magic-quote-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            };
+
+            document.addEventListener('mouseup', () => {
+                const selection = window.getSelection().toString().trim();
+                if (selection && selection.length > 5) {
+                    cardTextArea.value = selection;
+                    drawCard();
+                    editorSection.style.animation = 'pulse 0.5s ease-out';
+                    setTimeout(() => editorSection.style.animation = '', 500);
+                }
+            });
+        }
+
+        // 2. Handle PDF Selection and Text Extraction
+        async function handleFile(file) {
+            if (!file || file.type !== 'application/pdf') return;
+
+            uploadSection.hidden = true;
+            editorSection.hidden = false;
+
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+            pdfDoc = await loadingTask.promise;
+
+            renderPDFText();
+        }
+
+        async function renderPDFText() {
+            pdfRenderContainer.innerHTML = '';
+            pdfRenderContainer.style.display = 'block';
+
+            for (let i = 1; i <= pdfDoc.numPages; i++) {
+                try {
+                    const page = await pdfDoc.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+
+                    const pageBreak = document.createElement('div');
+                    pageBreak.className = 'extract-page-break';
+                    pageBreak.setAttribute('data-page', `Page ${i}`);
+                    pdfRenderContainer.appendChild(pageBreak);
+
+                    const textBlock = document.createElement('div');
+                    textBlock.style.marginBottom = '2rem';
+                    textBlock.textContent = pageText;
+                    pdfRenderContainer.appendChild(textBlock);
+
+                } catch (err) {
+                    console.error(`Error extracting text from page ${i}:`, err);
+                }
+            }
+        }
+
+        function loadBgImage(url) {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = () => {
+                customBgImage = img;
+                drawCard();
+            };
+            img.src = url;
+        }
+
+        function drawCard() {
+            const text = cardTextArea.value || 'The beautiful thing about learning is that no one can take it away from you.';
+            const author = cardAuthorInput.value || '';
+            const scale = 2; // 2160x2160 output
+            const W = canvas.width;
+            const H = canvas.height;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // 1. Draw Background
+            if (currentBgType === 'gradient') {
+                const grad = ctx.createLinearGradient(0, 0, W, H);
+                grad.addColorStop(0, currentGradient.colors[0]);
+                grad.addColorStop(1, currentGradient.colors[1]);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, W, H);
+            } else if (customBgImage) {
+                // Cover image logic
+                const imgRatio = customBgImage.width / customBgImage.height;
+                const canvasRatio = W / H;
+                let drawW, drawH, drawX, drawY;
+
+                if (imgRatio > canvasRatio) {
+                    drawH = H;
+                    drawW = customBgImage.width * (H / customBgImage.height);
+                    drawX = (W - drawW) / 2;
+                    drawY = 0;
+                } else {
+                    drawW = W;
+                    drawH = customBgImage.height * (W / customBgImage.width);
+                    drawX = 0;
+                    drawY = (H - drawH) / 2;
+                }
+                ctx.drawImage(customBgImage, drawX, drawY, drawW, drawH);
+
+                // Add dark overlay for text readability
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            // 2. Main Glassmorphism Card
+            const margin = 120 * scale;
+            const cardW = W - (margin * 2);
+            const cardH = H - (margin * 2);
+            const radius = 40 * scale;
+
+            ctx.save();
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(margin, margin, cardW, cardH, radius);
+            } else {
+                ctx.rect(margin, margin, cardW, cardH);
+            }
+
+            // Glass effect fill
+            ctx.fillStyle = 'rgba(20, 20, 25, 0.6)';
+
+            // Simple blur simulation (since canvas blur is heavy, we use dark transparent bg)
+            ctx.fill();
+
+            // Glass border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 2 * scale;
+            ctx.stroke();
+
+            // Glow/Shadow effect internal
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 40 * scale;
+            ctx.shadowOffsetY = 20 * scale;
+            ctx.fill();
+            ctx.restore();
+
+            // Additional accent line top
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillRect(margin + (cardW / 2) - (80 * scale), margin + (40 * scale), 160 * scale, 4 * scale);
+
+            // 3. Typography Selection
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+
+            let fontSize = 70 * scale;
+            if (text.length < 60) fontSize = 90 * scale;
+            if (text.length > 200) fontSize = 50 * scale;
+
+            // Quote Marks
+            ctx.font = `800 ${fontSize * 1.5}px '${currentFont}', serif`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.fillText('"', W / 2, (H / 2) - (150 * scale));
+
+            // Main Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `600 ${fontSize}px '${currentFont}', sans-serif`;
+            if (currentFont === 'Playfair Display') {
+                ctx.font = `italic 700 ${fontSize}px '${currentFont}', serif`;
+            }
+
+            const maxWidth = cardW - (160 * scale);
+            const lineHeight = fontSize * 1.4;
+
+            // Draw Wrapped Text
+            let finalY = wrapText(ctx, text, W / 2, H / 2, maxWidth, lineHeight);
+
+            // Draw Author
+            if (author) {
+                ctx.font = `400 ${35 * scale}px 'Inter', sans-serif`;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fillText(`— ${author}`, W / 2, finalY + (60 * scale));
+            }
+
+            // Bottom Branding
+            ctx.font = `500 ${28 * scale}px 'Outfit', sans-serif`;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.fillText('PDFMAGIC.COM', W / 2, H - margin - (40 * scale));
+        }
+
+        // Modified wrapText to return final Y position for author placement
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            const lines = [];
+
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = context.measureText(testLine);
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+
+            const totalHeight = lines.length * lineHeight;
+            let startY = y - (totalHeight / 2) + (lineHeight / 3);
+
+            for (let k = 0; k < lines.length; k++) {
+                context.fillText(lines[k].trim(), x, startY);
+                startY += lineHeight;
+            }
+            return startY;
+        }
+
+        // Main entry point
+        function initializeApp() {
+            canvas.width = 2160;
+            canvas.height = 2160;
+            setupUI();
+            drawCard();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        initializeApp();
+    </script>
+</body>
+
+</html>
+
+
+
+

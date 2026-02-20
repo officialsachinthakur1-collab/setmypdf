@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Card Magic | PDF Magic</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        .id-magic-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            width: 100%;
+            height: calc(100vh - 250px);
+            min-height: 600px;
+        }
+
+        .config-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .preview-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .template-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .template-btn.active {
+            border-color: #00c853;
+            background: rgba(0, 200, 83, 0.05);
+            color: #fff;
+        }
+
+        .template-btn i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .template-btn span {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .canvas-container {
+            background: #1a1c23;
+            border: 2px dashed #333;
+            border-radius: 8px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: auto;
+        }
+
+        .id-card-view {
+            width: 500px;
+            /* Scaled visual representation */
+            aspect-ratio: 85.6 / 53.98;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .pdf-viewer-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 100;
+            flex-direction: column;
+            padding: 2rem;
+        }
+
+        .pdf-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+            padding-bottom: 5rem;
+        }
+
+        .page-item {
+            position: relative;
+            cursor: crosshair;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .page-item:hover {
+            border-color: #00c853;
+        }
+
+        .selection-box {
+            position: absolute;
+            border: 2px solid #00c853;
+            background: rgba(0, 200, 83, 0.2);
+            pointer-events: none;
+            display: none;
+        }
+
+        .floating-controls {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 101;
+        }
+
+        .crop-hint {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            z-index: 101;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero" style="margin-bottom: 3rem;">
+            <h1>ID Card <span class="gradient-text">Magic</span></h1>
+            <p>Transform large gov PDFs into standard pocket-sized card layouts instantly.</p>
+        </section>
+
+        <section class="id-magic-layout">
+            <aside class="config-panel">
+                <div class="control-group">
+                    <h4 style="margin-bottom: 1rem;">1. Select Card Type</h4>
+                    <div class="template-grid">
+                        <button class="template-btn active" data-template="aadhar">
+                            <i data-lucide="shield"></i>
+                            <span>Aadhar</span>
+                        </button>
+                        <button class="template-btn" data-template="pan">
+                            <i data-lucide="credit-card"></i>
+                            <span>PAN Card</span>
+                        </button>
+                        <button class="template-btn" data-template="voter">
+                            <i data-lucide="users"></i>
+                            <span>Voter ID</span>
+                        </button>
+                        <button class="template-btn" data-template="dl">
+                            <i data-lucide="car"></i>
+                            <span>DL / License</span>
+                        </button>
+                        <button class="template-btn" data-template="generic" style="grid-column: span 2;">
+                            <i data-lucide="file-text"></i>
+                            <span>Generic School/Work ID</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-group" id="upload-group">
+                    <h4 style="margin-bottom: 1rem;">2. Upload PDF</h4>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                    <button class="primary-btn" style="width: 100%;"
+                        onclick="document.getElementById('file-input').click()">
+                        Choose PDF File
+                    </button>
+                    <p
+                        style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; text-align: center;">
+                        Usually provided by DigiLocker/UIDAI
+                    </p>
+                </div>
+
+                <div id="capture-status" class="control-group" style="display: none;">
+                    <h4 style="margin-bottom: 0.5rem;">Crops Captured</h4>
+                    <div style="display: flex; gap: 0.5rem; font-size: 0.85rem;">
+                        <span id="label-front" style="color: #666;">Front: <span
+                                style="color: #ef4444;">Missing</span></span>
+                        <span id="label-back" style="color: #666;">Back: <span
+                                style="color: #666;">Optional</span></span>
+                    </div>
+                </div>
+
+                <div class="action-bar" style="border: none; padding: 0; margin-top: auto;">
+                    <button id="export-btn" class="accent-btn" disabled style="width: 100%;">Download Results</button>
+                </div>
+            </aside>
+
+            <section class="preview-panel" id="main-preview">
+                <div class="canvas-container">
+                    <div style="text-align: center;">
+                        <span style="font-size: 0.8rem; color: #666; text-transform: uppercase;">Front Side</span>
+                        <div id="card-front" class="id-card-view">
+                            <span>Ready for upload...</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <span style="font-size: 0.8rem; color: #666; text-transform: uppercase;">Back Side</span>
+                        <div id="card-back" class="id-card-view">
+                            <span>Optional back side</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PDF Cropper Overlay -->
+                <div id="pdf-cropper" class="pdf-viewer-overlay">
+                    <div class="crop-hint">Select the card area using your mouse</div>
+                    <div class="pdf-scroll-area" id="pdf-canvas-container">
+                        <!-- Pages will render here -->
+                    </div>
+                    <div class="floating-controls">
+                        <span id="cropper-status" style="color: #999; font-size: 0.9rem;">Selecting: **Front
+                            Side**</span>
+                        <button id="cancel-crop" class="secondary-btn" style="padding: 0.4rem 1rem;">Cancel</button>
+                        <button id="confirm-crop" class="accent-btn" style="padding: 0.4rem 1.5rem;" disabled>Use This
+                            Crop</button>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2026 PDF Magic - No data ever leaves your device.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/tools/id-card-magic.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>
+
+
+
+

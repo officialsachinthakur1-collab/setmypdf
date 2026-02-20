@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Flashcards | PDF Magic</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        .flashcard-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            width: 100%;
+            height: calc(100vh - 250px);
+            min-height: 600px;
+        }
+
+        .study-arena {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .cards-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        /* Flashcard Component */
+        .flashcard {
+            width: 450px;
+            height: 300px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem;
+            border-radius: 20px;
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+
+        .flashcard-front {
+            background: #fff;
+            color: #1a1c23;
+        }
+
+        .flashcard-back {
+            background: #7c4dff;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .card-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .progress-indicator {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: rgba(124, 77, 255, 0.1);
+            color: #7c4dff;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+
+        .card-list-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .card-list-item:hover {
+            border-color: #7c4dff;
+            background: rgba(124, 77, 255, 0.05);
+        }
+
+        .card-list-item.active {
+            border-color: #7c4dff;
+            color: #fff;
+            background: rgba(124, 77, 255, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero" style="margin-bottom: 3rem;">
+            <h1>PDF to <span class="gradient-text">Flashcards</span></h1>
+            <p>Master your documents with interactive flippable cards created from your PDF notes.</p>
+        </section>
+
+        <section class="flashcard-layout">
+            <section class="study-arena">
+                <div id="progress" class="progress-indicator" style="display: none;">Card 1 of 10</div>
+
+                <div id="flashcard-container" class="empty-state">
+                    <i data-lucide="layers" style="width: 64px; height: 64px; opacity: 0.2;"></i>
+                    <div style="max-width: 400px;">
+                        <h3>Bring your notes to life</h3>
+                        <p>Upload a PDF to automatically generate cards or add them manually from your document text.
+                        </p>
+                        <input type="file" id="file-input" accept="application/pdf" hidden>
+                        <button class="primary-btn" style="margin-top: 1.5rem;"
+                            onclick="document.getElementById('file-input').click()">
+                            Upload PDF to Start
+                        </button>
+                    </div>
+                </div>
+
+                <div id="active-card-wrapper" style="display: none; align-items: center; flex-direction: column;">
+                    <div class="flashcard" id="main-card">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front" id="card-front-content">Question or Concept</div>
+                            <div class="flashcard-back" id="card-back-content">Answer or Explanation</div>
+                        </div>
+                    </div>
+
+                    <div class="card-controls">
+                        <button id="prev-btn" class="secondary-btn" style="padding: 0.8rem;"><i
+                                data-lucide="chevron-left"></i></button>
+                        <button id="flip-hint" class="secondary-btn"
+                            style="padding: 0.8rem 2rem; font-size: 0.9rem;">Click Card to Flip</button>
+                        <button id="next-btn" class="secondary-btn" style="padding: 0.8rem;"><i
+                                data-lucide="chevron-right"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="cards-panel">
+                <h4 style="display: flex; align-items: center; justify-content: space-between;">
+                    Card List
+                    <span id="card-count"
+                        style="font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; color: #7c4dff;">0
+                        Cards</span>
+                </h4>
+
+                <div id="card-list"
+                    style="display: flex; flex-direction: column; gap: 0.8rem; flex: 1; overflow-y: auto;">
+                    <p style="text-align: center; color: #555; font-size: 0.85rem; margin-top: 2rem;">No cards yet</p>
+                </div>
+
+                <div id="extraction-status"
+                    style="display: none; padding: 1rem; background: rgba(124, 77, 255, 0.05); border-radius: 12px; border: 1px dashed #7c4dff;">
+                    <p style="font-size: 0.8rem; color: #aaa; margin: 0;">Analyzing PDF Content...</p>
+                </div>
+
+                <button id="shuffle-btn" class="accent-btn" style="width: 100%; margin-top: auto;" disabled>Shuffle
+                    Deck</button>
+            </aside>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2026 PDF Magic - No upload, no cloud, purely your device.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/tools/flashcards.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>
+
+
+
+

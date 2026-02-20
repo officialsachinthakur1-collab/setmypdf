@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress PDF - PDF Magic</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+
+<body>
+    <div class="glass-bg"></div>
+
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">
+                <a href="/"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="logo-icon"><i data-lucide="file-text"></i></div>
+                    <div class="logo-text">PDF<span>Magic</span></div>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="/id-card-magic.html" class="nav-item-highlight">
+                    ID PDF <span class="nav-badge new-badge">NEW</span>
+                </a>
+                <a href="/pdf-to-social.html" class="nav-item-highlight">
+                    Social PDF <span class="nav-badge hot-badge">HOT</span>
+                </a>
+                <a href="/protect.html">Secure PDF</a>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Organize PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/merge.html"><i data-lucide="merge"></i> Merge PDF</a>
+                        <a href="/split.html"><i data-lucide="scissors"></i> Split PDF</a>
+                        <a href="/compress.html"><i data-lucide="shrink"></i> Compress PDF</a>
+                        <a href="/rotate.html"><i data-lucide="rotate-cw"></i> Rotate PDF</a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" style="cursor: pointer;">Convert PDF <i
+                            data-lucide="chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/word-to-pdf.html"><i data-lucide="file-text"></i> Word to PDF</a>
+                        <a href="/excel-to-pdf.html"><i data-lucide="table"></i> Excel to PDF</a>
+                        <a href="/ppt-to-pdf.html"><i data-lucide="presentation"></i> PPT to PDF</a>
+                        <a href="/pdf-to-word.html"><i data-lucide="file-text"></i> PDF to Word</a>
+                        <a href="/pdf-to-excel.html"><i data-lucide="table"></i> PDF to Excel</a>
+                        <a href="/pdf-to-ppt.html"><i data-lucide="presentation"></i> PDF to PPT</a>
+                        <a href="/pdf-to-image.html"><i data-lucide="file-image"></i> PDF to Image</a>
+                        <a href="/image-to-pdf.html"><i data-lucide="image-plus"></i> Image to PDF</a>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <a href="/" class="home-btn">All Tools</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <section class="hero">
+            <h1 class="gradient-text">Compress PDF</h1>
+            <p>Reduce PDF file size while maintaining the best possible quality. 100% private processing in your
+                browser.</p>
+        </section>
+
+        <!-- Tool Interface -->
+        <section class="tool-interface">
+            <div id="drop-zone" class="upload-zone">
+                <input type="file" id="file-input" hidden accept=".pdf">
+                <div class="upload-content">
+                    <i data-lucide="shrink"></i>
+                    <h3>Select PDF File</h3>
+                    <p>Drag & drop or click to choose a file</p>
+                    <button class="primary-btn" onclick="document.getElementById('file-input').click()">Choose
+                        File</button>
+                </div>
+            </div>
+
+            <div id="file-ready-container" class="file-list-container" hidden>
+                <div class="file-card" style="margin-bottom: 2rem;">
+                    <div class="file-card-info">
+                        <span class="file-icon">📄</span>
+                        <span id="selected-file-name" class="file-name">filename.pdf</span>
+                        <span id="original-size-badge"
+                            style="background: rgba(255,255,255,0.05); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem;">0
+                            KB</span>
+                    </div>
+                    <button class="remove-btn" onclick="location.reload()">Reset</button>
+                </div>
+
+                <div class="compression-options" style="display: grid; gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="option-card"
+                        style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 2px solid var(--accent-color);">
+                        <h4 style="display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="zap" style="width: 18px; color: var(--accent-color);"></i>
+                            Recommended Compression
+                        </h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Good quality,
+                            good file size reduction. Perfect for most emails.</p>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button id="compress-btn" class="accent-btn">Compress PDF</button>
+                </div>
+            </div>
+
+            <div id="processing-state" class="processing-state" hidden>
+                <div class="loader"></div>
+                <p>Optimizing your PDF... This happens locally in your browser.</p>
+                <div class="progress-bar-container"
+                    style="width: 100%; max-width: 400px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin: 1.5rem auto 0 auto; overflow: hidden;">
+                    <div id="compress-progress-bar"
+                        style="width: 0%; height: 100%; background: var(--accent-color); transition: width 0.3s ease;">
+                    </div>
+                </div>
+                <p id="compress-progress-text"
+                    style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-secondary); font-weight: 600; text-align: center;">
+                    0%</p>
+            </div>
+
+            <div id="success-state" class="success-state" hidden>
+                <div class="success-icon">
+                    <i data-lucide="check-circle-2"></i>
+                </div>
+                <h3>PDF Compressed Successfully!</h3>
+                <p id="savings-text">Your file size has been reduced by 0%.</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0.5rem 0 3rem;">
+                    New size: <span id="new-size-display" style="color: var(--text-primary); font-weight: 600;">0
+                        KB</span>
+                </p>
+
+                <div class="action-bar">
+                    <button id="download-btn" class="primary-btn">Download Compressed PDF</button>
+                    <button onclick="location.reload()" class="secondary-btn">Compress Another</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">
+                © 2026 PDF Magic - All your PDF needs in one place.<br>
+                Files processed safely in browser.
+            </p>
+        </div>
+    </footer>
+
+    <script type="module" src="/src/tools/compress-pdf.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
